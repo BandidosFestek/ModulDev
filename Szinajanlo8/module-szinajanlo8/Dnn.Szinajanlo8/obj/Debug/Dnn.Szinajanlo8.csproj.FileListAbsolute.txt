@@ -1,0 +1,10 @@
+C:\Dev\DNN\DesktopModules\bin\Dnn.Szinajanlo8.dll.config
+C:\Dev\DNN\DesktopModules\bin\Dnn.Szinajanlo8.dll
+C:\Dev\DNN\DesktopModules\bin\Dnn.Szinajanlo8.pdb
+C:\Dev\DNN\DesktopModules\Szinajanlo8\module-szinajanlo8\Dnn.Szinajanlo8\obj\Debug\Dnn.Szinajanlo8.csproj.AssemblyReference.cache
+C:\Dev\DNN\DesktopModules\Szinajanlo8\module-szinajanlo8\Dnn.Szinajanlo8\obj\Debug\Szinajanlo8.Dnn.Dnn.Szinajanlo8.App_LocalResources.Settings.resources
+C:\Dev\DNN\DesktopModules\Szinajanlo8\module-szinajanlo8\Dnn.Szinajanlo8\obj\Debug\Dnn.Szinajanlo8.csproj.GenerateResource.cache
+C:\Dev\DNN\DesktopModules\Szinajanlo8\module-szinajanlo8\Dnn.Szinajanlo8\obj\Debug\Dnn.Szinajanlo8.csproj.CoreCompileInputs.cache
+C:\Dev\DNN\DesktopModules\Szinajanlo8\module-szinajanlo8\Dnn.Szinajanlo8\obj\Debug\Dnn.Szin.AFAB4F0C.Up2Date
+C:\Dev\DNN\DesktopModules\Szinajanlo8\module-szinajanlo8\Dnn.Szinajanlo8\obj\Debug\Dnn.Szinajanlo8.dll
+C:\Dev\DNN\DesktopModules\Szinajanlo8\module-szinajanlo8\Dnn.Szinajanlo8\obj\Debug\Dnn.Szinajanlo8.pdb
