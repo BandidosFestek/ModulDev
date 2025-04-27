@@ -1,0 +1,74 @@
+﻿@inherits DotNetNuke.Web.Mvc.Framework.DnnWebViewPage<dynamic>
+@using System.Drawing
+@using Szinajanlo8.Dnn.Dnn.Szinajanlo8.Models;
+
+@{
+    Layout = "~/DesktopModules/MVC/Dnn.Szinajanlo8/Views/Shared/_Layout.cshtml";
+
+    var baseColor = ViewBag.BaseColor as Color?;
+    var suggestions = ViewBag.Suggestions as List<Tuple<Color, Product, SearchObjects>>;
+}
+<div class="mt-4">
+    <a href="@Url.Action("Index", "ImageAnalyzer")" class="btn btn-primary">Új kép feltöltése</a>
+</div>
+<h2>Ajánlott színek és termékek:</h2>
+
+@if (ViewBag.WallColor != null)
+{
+    <div class="alert alert-info">
+        <strong>Fal színe (RGB):</strong> @ViewBag.WallColor
+    </div>
+}
+
+@if (baseColor != null)
+{
+    <div class="alert alert-info">
+        <strong>Átlag szín:</strong> RGB(@baseColor.Value.R, @baseColor.Value.G, @baseColor.Value.B) <br />
+        <div style="width:100px; height:100px; background-color:rgb(@baseColor.Value.R,@baseColor.Value.G,@baseColor.Value.B); margin-top: 10px; border: 1px solid #000;"></div>
+    </div>
+}
+
+@if (suggestions != null && suggestions.Count > 0)
+{
+    <div class="row">
+        @foreach (var item in suggestions)
+        {
+            var color = item.Item1;
+            var product = item.Item2;
+            var searchObject = item.Item3;
+
+            <div class="col-md-6 mb-4">
+                <div class="card p-3">
+                    <div class="mb-2">
+                        <strong>Ajánlott szín:</strong> RGB(@color.R, @color.G, @color.B) <br />
+                        <div style="width:50px;height:25px;background-color:rgb(@color.R,@color.G,@color.B);border:1px solid #000;"></div>
+                    </div>
+
+                    @if (product != null)
+                    {
+                        <div class="mb-1"><strong>Termék neve:</strong> @searchObject.Title</div>
+                        <div class="mb-1"><strong>SKU:</strong> @product.SKU</div>
+                        <div class="mb-1"><strong>Ár:</strong> @product.SitePrice.ToString("0.00") Ft</div>
+                        <div class="mb-1">
+                            <strong>Kép:</strong><br />
+                            <!-- Kép dinamikus betöltése -->
+                            <img src="@ViewBag.ProductImageUrl" alt="Termék kép" style="width: 100%; max-width: 200px;" />
+                        </div>
+
+                        <a href="http://www.dnndev.me/HotcakesStore/Cart?AddSku=@product.SKU&amp;AddSkuQty=1" class="add-to-cart-product">
+                            <span><em class="glyphicon glyphicon-shopping-cart"></em> Kosárba</span>
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="text-muted">Nincs hozzá tartozó termék.</div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-warning">Nincs ajánlott szín vagy SKU adat.</div>
+}
