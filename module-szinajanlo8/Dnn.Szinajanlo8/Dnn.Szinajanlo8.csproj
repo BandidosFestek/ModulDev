@@ -106,6 +106,9 @@
     <Compile Include="Components\FeatureController.cs" />
     <Compile Include="Controllers\ImageAnalyzerController.cs" />
     <Compile Include="Controllers\SettingsController.cs" />
+    <Compile Include="Models\Colors.cs" />
+    <Compile Include="Models\Product.cs" />
+    <Compile Include="Models\SearchObjects.cs" />
     <Compile Include="Models\Settings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -142,7 +145,9 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\_ViewStart.cshtml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Services\Implementations\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Web.config">
       <SubType>Designer</SubType>

@@ -7,14 +7,39 @@
 
 <h2>Kép feltöltése – Átlag szín megjelenítés</h2>
 
+@if (ViewBag.ColorCount != null)
+{
+    <div class="alert alert-warning mt-3">
+        <strong>Színek száma az adatbázisban:</strong> @ViewBag.ColorCount
+    </div>
+}
+
 <form action="@Url.Action("Index", "ImageAnalyzer")" method="post" enctype="multipart/form-data">
-    <input type="file" name="imageFile" class="form-control mb-2" />
+    <div class="form-group">
+        <label for="wallColorR">Fal színe – Piros (R):</label>
+        <input type="number" name="wallColorR" class="form-control mb-2" placeholder="Pl.: 255" min="0" max="255" />
+    </div>
+    <div class="form-group">
+        <label for="wallColorG">Fal színe – Zöld (G):</label>
+        <input type="number" name="wallColorG" class="form-control mb-2" placeholder="Pl.: 200" min="0" max="255" />
+    </div>
+    <div class="form-group">
+        <label for="wallColorB">Fal színe – Kék (B):</label>
+        <input type="number" name="wallColorB" class="form-control mb-2" placeholder="Pl.: 100" min="0" max="255" />
+    </div>
+
+    <div class="form-group">
+        <label for="imageFile">Kép feltöltése:</label>
+        <input type="file" name="imageFile" class="form-control mb-2" />
+    </div>
     <button type="submit" class="btn btn-success">Feltöltés</button>
 </form>
 
 @if (ViewBag.AverageColor != null)
 {
     <div class="alert alert-info mt-3">
-        <strong>Átlag szín:</strong> @ViewBag.AverageColor
+        <strong>Átlag szín:</strong> @ViewBag.AverageColor <br />
+        <strong>Hex kód:</strong> @ViewBag.BaseColorHex
+        <div style="width:100px; height:100px; background-color:@ViewBag.BaseColorHex; margin-top: 10px; border: 1px solid #000;"></div>
     </div>
 }
