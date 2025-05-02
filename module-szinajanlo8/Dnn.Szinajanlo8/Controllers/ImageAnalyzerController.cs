@@ -86,7 +86,7 @@ namespace Szinajanlo8.Dnn.Dnn.Szinajanlo8.Controllers
                             if (closest != null)
                             {
                                 prod = productRepo.GetById(closest.SKU);
-                                searchObj = searchRepo.Get().Where(search => search.Id == prod.Id).FirstOrDefault();
+                                searchObj = searchRepo.Get().Where(search => search.ObjectId == prod.bvin).FirstOrDefault();
                             }
 
                             resultList.Add(Tuple.Create(recColor, prod, searchObj));
@@ -120,7 +120,7 @@ namespace Szinajanlo8.Dnn.Dnn.Szinajanlo8.Controllers
                     double distance = Distance(pixel, wallColor);
 
                     // Ha a pixel túl közel van a fal színéhez, akkor ne vegyük bele
-                    if (distance > 100) // A tolerancia itt állítható
+                    if (distance > 65) // A tolerancia itt állítható
                     {
                         r += pixel.R;
                         g += pixel.G;
