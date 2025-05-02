@@ -22,7 +22,7 @@ namespace Szinajanlo8.Dnn.Dnn.Szinajanlo8.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult Index(HttpPostedFileBase imageFile, int wallColorR, int wallColorG, int wallColorB)
+        public ActionResult Index(HttpPostedFileBase imageFile, string wallColor)
         {
             if (imageFile == null || imageFile.ContentLength == 0)
             {
@@ -32,11 +32,8 @@ namespace Szinajanlo8.Dnn.Dnn.Szinajanlo8.Controllers
 
             try
             {
-                // A felhasználó által megadott fal színének RGB értékekre bontása
-                Color wallColorParsed = Color.FromArgb(wallColorR, wallColorG, wallColorB);
-
-                // Kiírás a ViewBag-be a fal színének RGB értékeinek ellenőrzéséhez
-                ViewBag.WallColor = $"RGB({wallColorR}, {wallColorG}, {wallColorB})";
+                // A fal színét hexadecimális formátumból RGB-ra alakítjuk
+                Color wallColorParsed = ColorTranslator.FromHtml(wallColor);
 
                 using (var bitmap = new Bitmap(imageFile.InputStream))
                 {
@@ -92,12 +89,6 @@ namespace Szinajanlo8.Dnn.Dnn.Szinajanlo8.Controllers
                                 searchObj = searchRepo.Get().Where(search => search.Id == prod.Id).FirstOrDefault();
                             }
 
-                            // Kép elérési útvonalának kiszámítása Bvin alapján
-                            var productImagePath = $"~/Portals/0/Hotcakes/Data/products/{prod.bvin}/medium/{prod.ImageFileSmall}";
-
-                            // Kép URL dinamikus hozzárendelése ViewBag-en keresztül
-                            ViewBag.ProductImageUrl = Url.Content(productImagePath);
-
                             resultList.Add(Tuple.Create(recColor, prod, searchObj));
                         }
 
@@ -129,7 +120,7 @@ namespace Szinajanlo8.Dnn.Dnn.Szinajanlo8.Controllers
                     double distance = Distance(pixel, wallColor);
 
                     // Ha a pixel túl közel van a fal színéhez, akkor ne vegyük bele
-                    if (distance > 50) // A tolerancia itt állítható
+                    if (distance > 100) // A tolerancia itt állítható
                     {
                         r += pixel.R;
                         g += pixel.G;
