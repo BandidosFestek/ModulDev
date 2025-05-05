@@ -39,61 +39,68 @@
 
     <h2>Ajánlott színek és termékek:</h2>
 </div>
-    @if (ViewBag.WallColor != null)
-    {
-        <div class="alert alert-info">
-            <strong>Fal színe (RGB):</strong> @ViewBag.WallColor
-        </div>
-    }
+@if (ViewBag.WallColor != null)
+{
+    <div class="alert alert-info">
+        <strong>Fal színe (RGB):</strong> @ViewBag.WallColor
+    </div>
+}
 
-    @if (baseColor != null)
-    {
-        <div class="alert alert-info">
-            <strong>Átlag szín:</strong> RGB(@baseColor.Value.R, @baseColor.Value.G, @baseColor.Value.B) <br />
-            <div style="width:100px; height:100px; background-color:rgb(@baseColor.Value.R,@baseColor.Value.G,@baseColor.Value.B); margin-top: 10px; border: 1px solid #000;"></div>
-        </div>
-    }
+@if (baseColor != null)
+{
+    <div class="alert alert-info">
+        <strong>Átlag szín:</strong> RGB(@baseColor.Value.R, @baseColor.Value.G, @baseColor.Value.B) <br />
+        <div style="width:100px; height:100px; background-color:rgb(@baseColor.Value.R,@baseColor.Value.G,@baseColor.Value.B); margin-top: 10px; border: 1px solid #000;"></div>
+    </div>
+}
 
-    @if (suggestions != null && suggestions.Count > 0)
-    {
-        <div class="row-fluid hc-product-cards">
-            @foreach (var item in suggestions)
-            {
-                var color = item.Item1;
-                var product = item.Item2;
-                var searchObject = item.Item3;
-                <!-- Ajánlott szín és látványterv gomb -->
-                <div class="col-xs-6 col-md-4 hc-product-card">
-                    <div style="background-color: white;">
-                        <p>Ajánlott szín: RGB(@color.R, @color.G, @color.B)</p>
-                        <div style="width:50px;height:25px;background-color:rgb(@color.R,@color.G,@color.B);border:1px solid #000; margin-left: 10px;"></div>
-                        <button onclick="window.open('https://chat.openai.com/?prompt=Mutasd%20meg%20hogyan%20néz%20ki%20egy%20berendezett%20szoba%20falán%20az%20RGB%3A%20RGB(' + @color.R + ',' + @color.G + ',' + @color.B + ')%20szín')" class="btn btn-primary">Látványterv</button>
+@if (suggestions != null && suggestions.Count > 0)
+{
+    <div class="row-fluid hc-product-cards">
+        @foreach (var item in suggestions)
+        {
+            var color = item.Item1;
+            var product = item.Item2;
+            var searchObject = item.Item3;
+            <!-- Ajánlott szín és látványterv gomb -->
+            <div class="col-xs-6 col-md-4 hc-product-card">
+                <div style="background-color: white; border: 1px solid #ddd">
+                    <p>Ajánlott szín: RGB(@color.R, @color.G, @color.B)</p>
+                    <div style="width:50px;height:25px;background-color:rgb(@color.R,@color.G,@color.B);border:1px solid #000; margin-left: 10px;"></div>
+                    <button onclick="openLink(event)" class="btn btn-primary">Látványterv</button>
+
+                    <script>
+    function openLink(event) {
+        event.preventDefault();
+        window.open('https://chat.openai.com/?prompt=Mutasd%20meg%20hogyan%20néz%20ki%20egy%20berendezett%20szoba%20falán%20az%20RGB%3A%20RGB(' + @color.R + ',' + @color.G + ',' + @color.B + ')%20szín)');
+    }
+                    </script>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h2>
+                            <a href="http://rendfejl10006.northeurope.cloudapp.azure.com:8080/Termékeink/Product-Details/@product.SKU">@searchObject.Title</a>
+                        </h2>
                     </div>
-                        <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h2>
-                                <a href="http://rendfejl10006.northeurope.cloudapp.azure.com:8080/Termékeink/Product-Details/@product.SKU">@searchObject.Title</a>
-                            </h2>
+                    <div class="panel-body">
+                        <div class="hc-product-card-img">
+                            <img class="img-responsive img-rounded"
+                                 src="http://rendfejl10006.northeurope.cloudapp.azure.com:8080/Portals/0/Hotcakes/Data/products/@product.bvin/small/@product.ImageFileSmall"
+                                 alt="@searchObject.Title" />
                         </div>
-                        <div class="panel-body">
-                            <div class="hc-product-card-img">
-                                <img class="img-responsive img-rounded"
-                                     src="http://rendfejl10006.northeurope.cloudapp.azure.com:8080/Portals/0/Hotcakes/Data/products/@product.bvin/small/@product.ImageFileSmall"
-                                     alt="@searchObject.Title" />
-                            </div>
-                        </div>
-                        <div class="panel-footer text-center">
-                            @product.SitePrice.ToString("0") Ft<br>
-                            <a href="http://rendfejl10006.northeurope.cloudapp.azure.com:8080/Kosar?AddSku=@product.SKU&amp;AddSkuQty=1" class="add-to-cart-product">
-                                <span><em class="glyphicon glyphicon-shopping-cart"></em> Kosárba</span>
-                            </a>
-                        </div>
+                    </div>
+                    <div class="panel-footer text-center">
+                        @product.SitePrice.ToString("0") Ft<br>
+                        <a href="http://rendfejl10006.northeurope.cloudapp.azure.com:8080/Kosar?AddSku=@product.SKU&amp;AddSkuQty=1" class="add-to-cart-product">
+                            <span><em class="glyphicon glyphicon-shopping-cart"></em> Kosárba</span>
+                        </a>
                     </div>
                 </div>
-            }
-        </div>
-    }
-    else
-    {
-        <div class="alert alert-warning">Nincs ajánlott szín vagy SKU adat.</div>
-    }
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-warning">Nincs ajánlott szín vagy SKU adat.</div>
+}
