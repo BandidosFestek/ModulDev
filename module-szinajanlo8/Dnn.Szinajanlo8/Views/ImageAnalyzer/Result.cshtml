@@ -67,13 +67,13 @@
                 <div style="background-color: white; border: 1px solid #ddd">
                     <p>Ajánlott szín: RGB(@color.R, @color.G, @color.B)</p>
                     <div style="width:50px;height:25px;background-color:rgb(@color.R,@color.G,@color.B);border:1px solid #000; margin-left: 10px;"></div>
-                    <button onclick="openLink(event)" class="btn btn-primary">Látványterv</button>
+                    <button onclick="openLink(@color.R, @color.G, @color.B)" class="btn btn-primary">Látványterv</button>
 
                     <script>
-    function openLink(event) {
-        event.preventDefault();
-        window.open('https://chat.openai.com/?prompt=Mutasd%20meg%20hogyan%20néz%20ki%20egy%20berendezett%20szoba%20falán%20az%20RGB%3A%20RGB(' + @color.R + ',' + @color.G + ',' + @color.B + ')%20szín)');
-    }
+                        function openLink(r, g, b) {
+                            event.preventDefault();
+                            window.open('https://chat.openai.com/?prompt=Mutasd%20meg%20hogyan%20néz%20ki%20egy%20berendezett%20szoba%20falán%20az%20RGB%3A%20RGB(' + r + ',' + g + ',' + b + ')%20szín)');
+                        }
                     </script>
                 </div>
                 <div class="panel panel-default">
