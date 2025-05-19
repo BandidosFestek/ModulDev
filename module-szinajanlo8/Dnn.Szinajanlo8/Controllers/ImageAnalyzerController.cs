@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -32,6 +33,19 @@ namespace Szinajanlo8.Dnn.Dnn.Szinajanlo8.Controllers
 
             try
             {
+
+                using (var ms = new MemoryStream())
+                {
+                    imageFile.InputStream.Position = 0; // biztos ami biztos
+                    imageFile.InputStream.CopyTo(ms);
+                    var bytes = ms.ToArray();
+                    var base64 = Convert.ToBase64String(bytes);
+                    var mimeType = imageFile.ContentType;
+                    ViewBag.UploadedImageDataUrl = $"data:{mimeType};base64,{base64}";
+
+                    // Fontos: reset stream pozíció, hogy a Bitmap is használni tudja
+                    imageFile.InputStream.Position = 0;
+                }
                 Color wallColorParsed = ColorTranslator.FromHtml(wallColor);
 
                 using (var bitmap = new Bitmap(imageFile.InputStream))

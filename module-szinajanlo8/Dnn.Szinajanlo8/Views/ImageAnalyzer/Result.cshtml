@@ -46,6 +46,14 @@
         <a href="@Url.Action("Index", "ImageAnalyzer")" class="btn btn-primary">Új kép feltöltése</a>
     </div>
 
+    @if (ViewBag.UploadedImageDataUrl != null)
+    {
+        <div class="text-center">
+            <p><strong>Feltöltött kép:</strong></p>
+            <img src="@ViewBag.UploadedImageDataUrl" class="img-responsive img-thumbnail" style="max-height:300px; margin-bottom: 20px;" />
+        </div>
+    }
+
     <h2>Ajánlott színek és termékek:</h2>
     <h3>Kattints a színdobozokra az ajánlott szín megjelenítéséhez</h3>
 </div>
@@ -57,13 +65,6 @@
     </div>
 }
 
-@if (baseColor != null)
-{
-    <div class="alert alert-info">
-        <strong>Átlag szín:</strong> RGB(@baseColor.Value.R, @baseColor.Value.G, @baseColor.Value.B) <br />
-        <div style="width:100px; height:100px; background-color:rgb(@baseColor.Value.R,@baseColor.Value.G,@baseColor.Value.B); margin-top: 10px; border: 1px solid #000;"></div>
-    </div>
-}
 
 @if (suggestions != null)
 {
