@@ -5,12 +5,12 @@
 @{
     Layout = "~/DesktopModules/MVC/Dnn.Szinajanlo8/Views/Shared/_Layout.cshtml";
     var baseColor = ViewBag.BaseColor as Color?;
-    var suggestions = ViewBag.Suggestions as List<Tuple<Color, Product, SearchObjects>>;
+    var suggestions = ViewBag.Suggestions as IEnumerable<object>;
 }
 
 <style>
     a.add-to-cart-product {
-        background-color: #ff8c00 !important; /* Narancssárga, erősített prioritással */
+        background-color: #ff8c00 !important;
         color: white;
         padding: 10px 20px;
         border-radius: 5px;
@@ -18,7 +18,7 @@
     }
 
         a.add-to-cart-product:hover {
-            background-color: #ff7f00 !important; /* Hover esetén sötétebb narancs */
+            background-color: #ff7f00 !important;
         }
 
     h2, h3, p {
@@ -31,14 +31,25 @@
         font-weight: bold;
         margin: 0px 0px 10px;
     }
+
+    .color-bubble {
+        display: inline-block;
+        width: 100px;
+        height: 50px;
+        border: 1px solid #000;
+        margin: 0 3px 8px;
+    }
 </style>
+
 <div class="container text-center">
     <div class="mt-4">
         <a href="@Url.Action("Index", "ImageAnalyzer")" class="btn btn-primary">Új kép feltöltése</a>
     </div>
 
     <h2>Ajánlott színek és termékek:</h2>
+    <h3>Kattints a színdobozokra az ajánlott szín megjelenítéséhez</h3>
 </div>
+
 @if (ViewBag.WallColor != null)
 {
     <div class="alert alert-info">
@@ -54,20 +65,28 @@
     </div>
 }
 
-@if (suggestions != null && suggestions.Count > 0)
+@if (suggestions != null)
 {
     <div class="row-fluid hc-product-cards">
-        @foreach (var item in suggestions)
+        @foreach (var raw in suggestions)
         {
-            var color = item.Item1;
-            var product = item.Item2;
-            var searchObject = item.Item3;
-            <!-- Ajánlott szín és látványterv gomb -->
+            var item = (Tuple<Product, SearchObjects, List<Color>>)raw;
+            var product = item.Item1;
+            var searchObject = item.Item2;
+            var colors = item.Item3;
+
             <div class="col-xs-6 col-md-4 hc-product-card">
-                <div style="background-color: white; border: 1px solid #ddd">
-                    <p>Ajánlott szín: RGB(@color.R, @color.G, @color.B)</p>
-                    <div style="width:50px;height:25px;background-color:rgb(@color.R,@color.G,@color.B);border:1px solid #000; margin-left: 10px;"></div>
-                    <button onclick="openLink(@color.R, @color.G, @color.B)" class="btn btn-primary">Látványterv</button>
+                <div style="background-color: white; border: 1px solid #ddd; padding: 10px;">
+                    <p>Ajánlott színek:</p>
+
+                    @foreach (var color in colors)
+                    {
+                        var hex = string.Format("#{0:X2}{1:X2}{2:X2}", color.R, color.G, color.B);
+                        var rgbText = string.Format("RGB({0}, {1}, {2})", color.R, color.G, color.B);
+                        <a href="javascript:void(0);" onclick="openLink(@color.R, @color.G, @color.B)" title="@rgbText">
+                            <div class="color-bubble" style="background-color:@hex;"></div>
+                        </a>
+                    }
 
                     <script>
                         function openLink(r, g, b) {
@@ -76,21 +95,24 @@
                         }
                     </script>
                 </div>
+
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h2>
-                            <a href="http://rendfejl10006.northeurope.cloudapp.azure.com:8080/Termékeink/Product-Details/@product.SKU">@searchObject.Title</a>
+                            <a href="http://rendfejl10006.northeurope.cloudapp.azure.com:8080/Termékeink/Product-Details/@product.SKU">
+                                @(searchObject != null ? searchObject.Title : product.SKU)
+                            </a>
                         </h2>
                     </div>
                     <div class="panel-body">
                         <div class="hc-product-card-img">
                             <img class="img-responsive img-rounded"
                                  src="http://rendfejl10006.northeurope.cloudapp.azure.com:8080/Portals/0/Hotcakes/Data/products/@product.bvin/small/@product.ImageFileSmall"
-                                 alt="@searchObject.Title" />
+                                 alt="@(searchObject != null ? searchObject.Title : product.SKU)" />
                         </div>
                     </div>
                     <div class="panel-footer text-center">
-                        @product.SitePrice.ToString("0") Ft<br>
+                        @product.SitePrice.ToString("0") Ft<br />
                         <a href="http://rendfejl10006.northeurope.cloudapp.azure.com:8080/Kosar?AddSku=@product.SKU&amp;AddSkuQty=1" class="add-to-cart-product">
                             <span><em class="glyphicon glyphicon-shopping-cart"></em> Kosárba</span>
                         </a>

@@ -32,31 +32,31 @@ namespace Szinajanlo8.Dnn.Dnn.Szinajanlo8.Controllers
 
             try
             {
-                // A fal színét hexadecimális formátumból RGB-ra alakítjuk
                 Color wallColorParsed = ColorTranslator.FromHtml(wallColor);
 
                 using (var bitmap = new Bitmap(imageFile.InputStream))
                 {
-                    // Átlag szín kiszámítása figyelmen kívül hagyva a fal színét
+                    // Átlag szín számítás
                     Color avgColor = GetAverageColor(bitmap, wallColorParsed);
-                    ViewBag.AverageColor = $"RGB({avgColor.R}, {avgColor.G}, {avgColor.B})";
-                    ViewBag.BaseColorHex = $"#{avgColor.R:X2}{avgColor.G:X2}{avgColor.B:X2}";
+                    ViewBag.BaseColor = avgColor; // konkrét Color típus Razorhoz
+                    ViewBag.AverageColor = string.Format("RGB({0}, {1}, {2})", avgColor.R, avgColor.G, avgColor.B);
+                    ViewBag.BaseColorHex = string.Format("#{0:X2}{1:X2}{2:X2}", avgColor.R, avgColor.G, avgColor.B);
 
-                    // RGB -> HSL átalakítás
+                    // RGB -> HSL
                     double h, s, l;
                     RgbToHsl(avgColor, out h, out s, out l);
 
-                    // 4 ajánlott szín generálása
                     var suggestedColors = new List<Color>
-            {
-                HslToRgb((h + 180) % 360, s, l), // Komplementer szín
-                HslToRgb((h + 30) % 360, s, l),  // Analóg szín 1
-                HslToRgb((h + 330) % 360, s, l), // Analóg szín 2
-                HslToRgb(h, Math.Max(0, s - 0.2), Math.Min(1, l + 0.2)) // Monokróm szín
-            };
+                    {
+                        HslToRgb((h + 180) % 360, s, l),
+                        HslToRgb((h + 30) % 360, s, l),
+                        HslToRgb((h + 330) % 360, s, l),
+                        HslToRgb(h, Math.Max(0, s - 0.2), Math.Min(1, l + 0.2))
+                    };
 
-                    // Termékek betöltése és legközelebbi színek keresése
-                    var resultList = new List<Tuple<Color, Product, SearchObjects>>();
+                    // Egységesített ajánlás
+                    var suggestionDict = new Dictionary<string, Tuple<Product, SearchObjects, List<Color>>>();
+                    var usedColors = new HashSet<string>(); // RGB színkód string formában
 
                     using (var ctx = DataContext.Instance())
                     {
@@ -68,6 +68,11 @@ namespace Szinajanlo8.Dnn.Dnn.Szinajanlo8.Controllers
 
                         foreach (var recColor in suggestedColors)
                         {
+                            // Színkulcs mint RGB string
+                            string rgbKey = $"{recColor.R}-{recColor.G}-{recColor.B}";
+                            if (usedColors.Contains(rgbKey))
+                                continue; // már használtunk egy SKU-t erre az RGB-re
+
                             Colors closest = null;
                             double minDist = double.MaxValue;
 
@@ -81,19 +86,30 @@ namespace Szinajanlo8.Dnn.Dnn.Szinajanlo8.Controllers
                                 }
                             }
 
-                            Product prod = null;
-                            SearchObjects searchObj = null;
                             if (closest != null)
                             {
-                                prod = productRepo.GetById(closest.SKU);
-                                searchObj = searchRepo.Get().Where(search => search.ObjectId == prod.bvin).FirstOrDefault();
-                            }
+                                Product prod = productRepo.GetById(closest.SKU);
+                                if (prod == null) continue;
 
-                            resultList.Add(Tuple.Create(recColor, prod, searchObj));
+                                SearchObjects searchObj = searchRepo.Get().FirstOrDefault(so => so.ObjectId == prod.bvin);
+                                string productKey = prod.bvin;
+
+                                if (!suggestionDict.ContainsKey(productKey))
+                                {
+                                    suggestionDict[productKey] = Tuple.Create(prod, searchObj, new List<Color> { recColor });
+                                }
+                                else
+                                {
+                                    suggestionDict[productKey].Item3.Add(recColor);
+                                }
+
+                                usedColors.Add(rgbKey); // ezzel jelezzük, hogy ez az RGB már lefedett
+                            }
                         }
 
-                        ViewBag.Suggestions = resultList;
+                        ViewBag.Suggestions = suggestionDict.Values.ToList();
                     }
+
                 }
             }
             catch (Exception ex)
@@ -109,18 +125,13 @@ namespace Szinajanlo8.Dnn.Dnn.Szinajanlo8.Controllers
             long r = 0, g = 0, b = 0;
             int total = 0;
 
-            // Kép minden pixelét ellenőrizzük
             for (int y = 0; y < bmp.Height; y++)
             {
                 for (int x = 0; x < bmp.Width; x++)
                 {
                     Color pixel = bmp.GetPixel(x, y);
-
-                    // Színkülönbség számítása a fal színétől
                     double distance = Distance(pixel, wallColor);
-
-                    // Ha a pixel túl közel van a fal színéhez, akkor ne vegyük bele
-                    if (distance > 65) // A tolerancia itt állítható
+                    if (distance > 65)
                     {
                         r += pixel.R;
                         g += pixel.G;
@@ -130,11 +141,8 @@ namespace Szinajanlo8.Dnn.Dnn.Szinajanlo8.Controllers
                 }
             }
 
-            // Ha nem találtunk érvényes pixelt, akkor visszaadjuk a fal színét
             if (total == 0)
-            {
-                return wallColor; // Ha nincs találat, a fal színe kerül visszaadásra
-            }
+                return wallColor;
 
             return Color.FromArgb((int)(r / total), (int)(g / total), (int)(b / total));
         }
@@ -148,7 +156,6 @@ namespace Szinajanlo8.Dnn.Dnn.Szinajanlo8.Controllers
             );
         }
 
-        // RGB -> HSL konverzió
         private void RgbToHsl(Color c, out double h, out double s, out double l)
         {
             double r = c.R / 255.0;
@@ -179,7 +186,6 @@ namespace Szinajanlo8.Dnn.Dnn.Szinajanlo8.Controllers
             }
         }
 
-        // HSL -> RGB konverzió
         private Color HslToRgb(double h, double s, double l)
         {
             double r, g, b;
